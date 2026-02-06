@@ -4,13 +4,113 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>同人セール忍者 / Doujin Sale Ninja (beta)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; line-height: 1.5; }
+    header { margin-bottom: 16px; }
+    .muted { color: #666; font-size: 14px; }
+    .grid { display: grid; gap: 12px; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 12px 14px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid #ccc; font-size: 12px; }
+    .r18 { border-color: #e11d48; color: #e11d48; }
+    .price { font-weight: 700; }
+    .kpi { font-size: 13px; color: #333; }
+    a { color: #0366d6; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .error { color: #b91c1c; white-space: pre-wrap; background: #fff1f2; padding: 10px; border-radius: 8px; border: 1px solid #fecdd3; }
+  </style>
 </head>
 <body>
-  <h1>同人セール忍者 / Doujin Sale Ninja (beta)</h1>
-  <ul>
-    <li><a href="/ja/">日本語 / JA</a></li>
-    <li><a href="/en/">English / EN</a></li>
-    <li><a href="/r18/">R-18（注意）</a></li>
-  </ul>
+  <header>
+    <h1>同人セール忍者 / Doujin Sale Ninja</h1>
+    <div class="muted">data/sales.json を読み込んで表示（ダミー表示）</div>
+    <div class="row" style="margin-top:10px">
+      <a class="badge" href="/ja/">日本語 / JA</a>
+      <a class="badge" href="/en/">English / EN</a>
+      <a class="badge r18" href="/r18/">R-18（注意）</a>
+      <a class="badge" href="/data/sales.json" target="_blank" rel="noopener">JSONを見る</a>
+    </div>
+  </header>
+
+  <main>
+    <div id="status" class="muted">読み込み中…</div>
+    <div id="list" class="grid" style="margin-top:12px"></div>
+  </main>
+
+  <script>
+    const yen = (n) => new Intl.NumberFormat("ja-JP").format(n);
+
+    function daysLeft(iso) {
+      const end = new Date(iso).getTime();
+      const now = Date.now();
+      const diff = end - now;
+      if (Number.isNaN(end)) return null;
+      const hours = diff / 3600000;
+      if (hours < 0) return "終了";
+      if (hours < 24) return `残り約${Math.ceil(hours)}時間`;
+      return `残り約${Math.ceil(hours / 24)}日`;
+    }
+
+    function renderItem(x) {
+      const left = daysLeft(x.sale_ends_at);
+      const r18 = x.rating === "r18";
+      const discount = (x.discount_percent ?? 0);
+      const points = (x.points_percent ?? 0);
+      const price = (x.price_jpy ?? 0);
+
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `
+        <div class="row">
+          <span class="badge">${x.store}</span>
+          ${r18 ? `<span class="badge r18">R-18</span>` : `<span class="badge">全年齢</span>`}
+          ${left ? `<span class="badge">${left}</span>` : ``}
+        </div>
+        <h3 style="margin:10px 0 6px">${x.title_ja || "(no title)"}</h3>
+        <div class="kpi row">
+          <span class="price">¥${yen(price)}</span>
+          <span>割引 ${discount}%</span>
+          <span>還元 ${points}%</span>
+          <span class="muted">終了: ${x.sale_ends_at || "-"}</span>
+        </div>
+        <div style="margin-top:10px">
+          <a href="${x.url}" target="_blank" rel="noopener">ストアで見る →</a>
+        </div>
+      `;
+      return el;
+    }
+
+    async function main() {
+      const status = document.getElementById("status");
+      const list = document.getElementById("list");
+
+      try {
+        const res = await fetch("/data/sales.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(`fetch failed: ${res.status} ${res.statusText}`);
+        const data = await res.json();
+
+        const items = Array.isArray(data.items) ? data.items : [];
+        status.textContent = `読み込み完了：${items.length}件（generated_at: ${data.generated_at || "-" }）`;
+
+        list.innerHTML = "";
+        items.forEach((x) => list.appendChild(renderItem(x)));
+
+        if (items.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "muted";
+          empty.textContent = "items が空です。data/sales.json を確認してください。";
+          list.appendChild(empty);
+        }
+      } catch (e) {
+        status.textContent = "読み込み失敗";
+        const err = document.createElement("div");
+        err.className = "error";
+        err.textContent = String(e);
+        list.appendChild(err);
+      }
+    }
+
+    main();
+  </script>
 </body>
 </html>
