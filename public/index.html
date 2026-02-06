@@ -103,37 +103,106 @@
       return el;
     }
 
-    async function main() {
-      const status = document.getElementById("status");
-      const list = document.getElementById("list");
+let allItems = [];
+let currentStore = "all";
 
-      try {
-        const res = await fetch("/data/sales.json", { cache: "no-store" });
-        if (!res.ok) throw new Error(`fetch failed: ${res.status} ${res.statusText}`);
-        const data = await res.json();
+function getEndTime(x) {
+  const t = new Date(x.sale_ends_at).getTime();
+  return Number.isNaN(t) ? null : t;
+}
 
-        const items = Array.isArray(data.items) ? data.items : [];
-        status.textContent = `読み込み完了：${items.length}件（generated_at: ${data.generated_at || "-" }）`;
+function applySortAndFilter(items) {
+  const now = Date.now();
 
-        list.innerHTML = "";
-        items.forEach((x) => list.appendChild(renderItem(x)));
+  // 1) フィルタ
+  let filtered = items;
+  if (currentStore !== "all") {
+    filtered = items.filter(x => x.store === currentStore);
+  }
 
-        if (items.length === 0) {
-          const empty = document.createElement("div");
-          empty.className = "muted";
-          empty.textContent = "items が空です。data/sales.json を確認してください。";
-          list.appendChild(empty);
-        }
-      } catch (e) {
-        status.textContent = "読み込み失敗";
-        const err = document.createElement("div");
-        err.className = "error";
-        err.textContent = String(e);
-        list.appendChild(err);
-      }
+  // 2) 終了が近い順（終了済み or 日付不正は最後）
+  filtered.sort((a, b) => {
+    const ta = getEndTime(a);
+    const tb = getEndTime(b);
+
+    const ka = (ta === null || ta < now) ? Number.POSITIVE_INFINITY : ta;
+    const kb = (tb === null || tb < now) ? Number.POSITIVE_INFINITY : tb;
+
+    return ka - kb;
+  });
+
+  return filtered;
+}
+
+function renderList() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  const shown = applySortAndFilter(allItems);
+
+  shown.forEach(x => list.appendChild(renderItem(x)));
+
+  if (shown.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "muted";
+    empty.textContent = "該当するデータがありません（フィルタ条件を変えてみてください）";
+    list.appendChild(empty);
+  }
+}
+
+function setupControls() {
+  const controls = document.getElementById("controls");
+  if (!controls) return;
+
+  controls.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-store]");
+    if (!btn) return;
+
+    currentStore = btn.dataset.store || "all";
+
+    // active表示を更新
+    controls.querySelectorAll("button[data-store]").forEach(b => {
+      b.classList.toggle("is-active", b === btn);
+    });
+
+    renderList();
+  });
+}
+
+async function main() {
+  const status = document.getElementById("status");
+  const list = document.getElementById("list");
+
+  try {
+    const res = await fetch("/data/sales.json", { cache: "no-store" });
+    if (!res.ok) throw new Error(`fetch failed: ${res.status} ${res.statusText}`);
+    const data = await res.json();
+
+    allItems = Array.isArray(data.items) ? data.items : [];
+
+    status.textContent = `読み込み完了：${allItems.length}件（generated_at: ${data.generated_at || "-" }）`;
+
+    setupControls();
+    renderList();
+
+    if (allItems.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "muted";
+      empty.textContent = "items が空です。data/sales.json を確認してください。";
+      list.appendChild(empty);
     }
+  } catch (e) {
+    status.textContent = "読み込み失敗";
+    list.innerHTML = "";
+    const err = document.createElement("div");
+    err.className = "error";
+    err.textContent = String(e);
+    list.appendChild(err);
+  }
+}
 
-    main();
+main();
+
   </script>
 </body>
 </html>
