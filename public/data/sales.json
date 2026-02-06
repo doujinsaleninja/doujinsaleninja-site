@@ -6,12 +6,36 @@
       "store": "DMM",
       "title_ja": "テスト作品A",
       "title_en": "Test Title A",
-      "url": "https://example.com",
+      "url": "https://example.com/a",
       "price_jpy": 1100,
       "discount_percent": 50,
       "points_percent": 10,
       "sale_ends_at": "2026-02-10T00:00:00Z",
       "rating": "all"
+    },
+    {
+      "id": "dlsite-0002",
+      "store": "DLsite",
+      "title_ja": "テスト作品B",
+      "title_en": "Test Title B",
+      "url": "https://example.com/b",
+      "price_jpy": 770,
+      "discount_percent": 30,
+      "points_percent": 15,
+      "sale_ends_at": "2026-02-08T12:00:00Z",
+      "rating": "all"
+    },
+    {
+      "id": "dmm-0003",
+      "store": "DMM",
+      "title_ja": "テスト作品C（R-18）",
+      "title_en": "Test Title C (R-18)",
+      "url": "https://example.com/c",
+      "price_jpy": 1540,
+      "discount_percent": 60,
+      "points_percent": 0,
+      "sale_ends_at": "2026-02-07T23:59:00Z",
+      "rating": "r18"
     }
   ]
 }
