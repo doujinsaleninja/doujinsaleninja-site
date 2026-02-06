@@ -32,10 +32,21 @@
     </div>
   </header>
 
-  <main>
-    <div id="status" class="muted">読み込み中…</div>
-    <div id="list" class="grid" style="margin-top:12px"></div>
-  </main>
+<main>
+  <!-- ▼ここにフィルタUIを追加 -->
+  <div id="controls" class="controls" style="display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;">
+    <button type="button" class="chip is-active" data-store="all">すべて</button>
+    <button type="button" class="chip" data-store="DMM">DMM</button>
+    <button type="button" class="chip" data-store="DLsite">DLsite</button>
+
+    <span style="margin-left:auto; opacity:.7; font-size:12px;">
+      並び替え：終了が近い順
+    </span>
+  </div>
+
+  <div id="status" class="muted">読み込み中…</div>
+  <div id="list" class="grid" style="margin-top:12px"></div>
+</main>
 
   <script>
     const yen = (n) => new Intl.NumberFormat("ja-JP").format(n);
