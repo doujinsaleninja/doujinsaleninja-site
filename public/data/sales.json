@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-02-06T00:00:00Z",
+  "items": [
+    {
+      "id": "demo-001",
+      "store": "dmm",
+      "title": "Demo Title",
+      "price_yen": 1000,
+      "discount_percent": 50,
+      "points_percent": 0,
+      "sale_end_at": "2026-02-10T00:00:00Z",
+      "is_r18": false,
+      "url": "https://example.com"
+    }
+  ]
+}
