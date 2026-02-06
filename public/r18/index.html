@@ -3,11 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>R-18（注意）</title>
+  <title>同人セール忍者 / R-18</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <h1>R-18（注意）</h1>
-  <p>R-18はリンク＋数値情報のみ（MVPは雛形のみ）。</p>
-  <p><a href="/ja/">JAへ戻る</a></p>
+  <header>
+    <h1>R-18（注意）</h1>
+    <div class="muted">このページはR-18のみ表示します</div>
+    <div class="row" style="margin-top:10px">
+      <a class="badge" href="/ja/">日本語 / JA</a>
+      <a class="badge" href="/en/">English / EN</a>
+      <a class="badge r18" href="/r18/">R-18（注意）</a>
+      <a class="badge" href="/data/sales.json" target="_blank" rel="noopener">JSONを見る</a>
+    </div>
+  </header>
+  <main>
+    <div id="status" class="muted">読み込み中…</div>
+    <div id="list" class="grid" style="margin-top:12px"></div>
+  </main>
+
+  <script src="/app.js"></script>
+  <script>DSN.runApp({ lang: "ja", mode: "r18only" });</script>
 </body>
 </html>
