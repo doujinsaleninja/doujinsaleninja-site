@@ -3,11 +3,25 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Doujin Sale Ninja (EN)</title>
+  <title>Doujin Sale Ninja / EN</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <h1>Doujin Sale Ninja (EN)</h1>
-  <p>MVP skeleton page.</p>
-  <p><a href="/ja/">日本語</a> / <a href="/">Home</a></p>
+  <header>
+    <h1>Doujin Sale Ninja (English)</h1>
+    <div class="row" style="margin-top:10px">
+      <a class="badge" href="/ja/">日本語 / JA</a>
+      <a class="badge" href="/en/">English / EN</a>
+      <a class="badge r18" href="/r18/">R-18 (Caution)</a>
+      <a class="badge" href="/data/sales.json" target="_blank" rel="noopener">View JSON</a>
+    </div>
+  </header>
+  <main>
+    <div id="status" class="muted">Loading…</div>
+    <div id="list" class="grid" style="margin-top:12px"></div>
+  </main>
+
+  <script src="/app.js"></script>
+  <script>DSN.runApp({ lang: "en", mode: "safe" });</script>
 </body>
 </html>
