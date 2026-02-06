@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>同人セール忍者（JA）</title>
+</head>
+<body>
+  <h1>同人セール忍者（JA）</h1>
+  <p>ダミーデータを読み込みます。</p>
+  <pre id="out">loading...</pre>
+
+  <script>
+    fetch("/data/sales.json")
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById("out").textContent =
+          "items: " + d.items.length + "\n" + JSON.stringify(d.items[0], null, 2);
+      })
+      .catch(e => document.getElementById("out").textContent = String(e));
+  </script>
+</body>
+</html>
